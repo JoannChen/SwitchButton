@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!--调试界面下SwitchButton-->
+    <color name="switch_button_checked_color">#dac225</color>
+    <color name="switch_button_unchecked_color">#FFFFFF</color>
+    <color name="switch_bg_checked_color">#8b8181</color>
+    <color name="switch_bg_unchecked_color">#E3E1E1</color>
+
+
+</resources>
