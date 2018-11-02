@@ -18,18 +18,27 @@ import android.view.View
 import android.widget.Checkable
 
 /**
- * Desc：线形开关
+ * Desc：圆形开关
  * Author：JoannChen
  * Mail：yongzuo_chen@dingyuegroup.cn
  * Date：2018/11/2 0002 11:00
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-class BaseSwitchButton : View, Checkable {
+class CircleSwitchButton : View, Checkable {
 
-    private val circleSwitchButton: Int = 1
-    private val squareSwitchButton: Int = 2
-    private val lineSwitchButton: Int = 3
-    private var switchButtonStyle = 1
+    /**
+     * 背景位置
+     */
+    private var left: Float = 0f
+    private var top: Float = 0f
+    private var right: Float = 0f
+    private var bottom: Float = 0f
+    private var centerX: Float = 0f
+    private var centerY: Float = 0f
+
+
+    private var height: Float = 0f //背景高
+    private var width: Float = 0f //背景宽
 
     /**
      * 动画状态：
@@ -41,145 +50,68 @@ class BaseSwitchButton : View, Checkable {
      * 6.点击切换
      */
     private val animateStateNone = 0
-    private val ANIMATE_STATE_PENDING_DRAG = 1
-    private val ANIMATE_STATE_DRAGING = 2
-    private val ANIMATE_STATE_PENDING_RESET = 3
-    private val ANIMATE_STATE_PENDING_SETTLE = 4
-    private val ANIMATE_STATE_SWITCH = 5
+    private val animateStatePendingDrag = 1
+    private val animateStateDrag = 2
+    private val animateStatePendingReset = 3
+    private val animateStatePendingSettle = 4
+    private val animateStateSwitch = 5
+
+    private var animateState = animateStateNone //动画状态
+
     private val argbEvaluator = android.animation.ArgbEvaluator()
-    /**
-     * 阴影半径
-     */
-    private var shadowRadius: Int = 0
-    /**
-     * 阴影Y偏移px
-     */
-    private var shadowOffset: Int = 0
-    /**
-     * 阴影颜色
-     */
-    private var shadowColor: Int = 0
 
-    /**
-     * 背景半径
-     */
-    private var viewRadius: Float = 0.toFloat()
+    private var shadowRadius: Int = 0 //阴影半径
+    private var shadowOffset: Int = 0 //阴影Y偏移px
+    private var shadowColor: Int = 0 //阴影颜色
 
-    /**
-     * 背景矩形圆角半径
-     */
-    private var viewRoundRadius: Float = 0.toFloat()
-    /**
-     * 按钮半径
-     */
-    private var buttonRadius: Float = 0.toFloat()
-    /**
-     * 背景高
-     */
-    private var height: Float = 0.toFloat()
-    /**
-     * 背景宽
-     */
-    private var width: Float = 0.toFloat()
-    /**
-     * 背景位置
-     */
-    private var left: Float = 0.toFloat()
-    private var top: Float = 0.toFloat()
-    private var right: Float = 0.toFloat()
-    private var bottom: Float = 0.toFloat()
-    private var centerX: Float = 0.toFloat()
-    private var centerY: Float = 0.toFloat()
-    /**
-     * 背景底色
-     */
-    private var background: Int = 0
-    /**
-     * 背景关闭颜色
-     */
-    private var uncheckedColor: Int = 0
-    /**
-     * 背景打开颜色
-     */
-    private var checkedColor: Int = 0
-    /**
-     * 按钮打开的颜色
-     */
-    private var checkedBtnColor: Int = 0
-    /**
-     * 按钮关闭的颜色
-     */
-    private var uncheckedBtnColor: Int = 0
+    private var viewRadius: Float = 0.toFloat() //背景半径
+    private var buttonRadius: Float = 0.toFloat() //按钮半径
+
+
     /**
      * 边框宽度px
      */
     private var borderWidth: Int = 0
-    /**
-     * 打开指示线颜色
-     */
-    private var checkLineColor: Int = 0
-    /**
-     * 打开指示线宽
-     */
-    private var checkLineWidth: Int = 0
-    /**
-     * 打开指示线长
-     */
-    private var checkLineLength: Float = 0.toFloat()
-    /**
-     * 关闭圆圈颜色
-     */
-    private var uncheckCircleColor: Int = 0
-    /**
-     * 关闭圆圈线宽
-     */
-    private var uncheckCircleWidth: Int = 0
-    /**
-     * 关闭圆圈位移X
-     */
-    private var uncheckCircleOffsetX: Float = 0.toFloat()
-    /**
-     * 关闭圆圈半径
-     */
-    private var uncheckCircleRadius: Float = 0.toFloat()
-    /**
-     * 打开指示线位移X
-     */
-    private var checkedLineOffsetX: Float = 0.toFloat()
-    /**
-     * 打开指示线位移Y
-     */
-    private var checkedLineOffsetY: Float = 0.toFloat()
-    /**
-     * 按钮最左边
-     */
-    private var buttonMinX: Float = 0.toFloat()
-    /**
-     * 按钮最右边
-     */
-    private var buttonMaxX: Float = 0.toFloat()
-    /**
-     * 按钮画笔
-     */
-    private var buttonPaint: Paint? = null
-    /**
-     * 背景画笔
-     */
-    private var paint: Paint? = null
+
+
+
+    private var background: Int = 0 //背景底色
+    private var uncheckedColor: Int = 0 //背景关闭颜色
+    private var checkedColor: Int = 0 //背景打开颜色
+
+    private var checkedBtnColor: Int = 0 //按钮打开的颜色
+    private var uncheckedBtnColor: Int = 0 //按钮关闭的颜色
+
+    private var checkLineColor: Int = 0 //打开指示线颜色
+    private var checkLineWidth: Int = 0 //打开指示线宽
+    private var checkLineLength: Float = 0.toFloat() //打开指示线长
+
+    private var uncheckedCircleColor: Int = 0 //关闭圆圈颜色
+    private var uncheckedCircleWidth: Int = 0 //关闭圆圈线宽
+    private var uncheckedCircleOffsetX: Float = 0.toFloat() //关闭圆圈位移X
+    private var uncheckedCircleRadius: Float = 0.toFloat() //关闭圆圈半径
+
+
+    private var checkedLineOffsetX: Float = 0.toFloat() //打开指示线位移X
+    private var checkedLineOffsetY: Float = 0.toFloat() //打开指示线位移Y
+
+    private var buttonMinX: Float = 0.toFloat() //按钮最左边
+    private var buttonMaxX: Float = 0.toFloat() //按钮最右边
+
+
+    private var buttonPaint: Paint? = null //按钮画笔
+    private var paint: Paint? = null //背景画笔
+
     /**
      * 当前状态
      */
     private var viewState: ViewState? = null
     private var beforeState: ViewState? = null
     private var afterState: ViewState? = null
+
     private val rect = RectF()
-    /**
-     * 动画状态
-     */
-    private var animateState = animateStateNone
-    /**
-     *
-     */
+
+
     private var valueAnimator: ValueAnimator? = null
     /**
      * 是否选中
@@ -211,15 +143,6 @@ class BaseSwitchButton : View, Checkable {
      */
     private var isEventBroadcast = false
     private var onCheckedChangeListener: OnCheckedChangeListener? = null
-
-
-    //Joann
-    private var lineHeight = 0
-
-    private var buttonOffset = 0
-
-    //Joann
-
     /**
      * 手势按下的时刻
      */
@@ -233,9 +156,7 @@ class BaseSwitchButton : View, Checkable {
         override fun onAnimationUpdate(animation: ValueAnimator) {
             val value = animation.animatedValue as Float
             when (animateState) {
-                ANIMATE_STATE_PENDING_SETTLE -> {
-                    run { }
-                    run { }
+                animateStatePendingSettle -> {
                     run {
                         viewState!!.checkedLineColor = argbEvaluator.evaluate(
                                 value,
@@ -245,7 +166,7 @@ class BaseSwitchButton : View, Checkable {
 
                         viewState!!.radius = beforeState!!.radius + (afterState!!.radius - beforeState!!.radius) * value
 
-                        if (animateState != ANIMATE_STATE_PENDING_DRAG) {
+                        if (animateState != animateStatePendingDrag) {
                             viewState!!.buttonX = beforeState!!.buttonX + (afterState!!.buttonX - beforeState!!.buttonX) * value
                         }
 
@@ -257,26 +178,26 @@ class BaseSwitchButton : View, Checkable {
 
                     }
                 }
-                ANIMATE_STATE_PENDING_RESET -> {
+                animateStatePendingReset -> {
                     run { }
                     run {
                         viewState!!.checkedLineColor = argbEvaluator.evaluate(value, beforeState!!.checkedLineColor, afterState!!.checkedLineColor) as Int
                         viewState!!.radius = beforeState!!.radius + (afterState!!.radius - beforeState!!.radius) * value
-                        if (animateState != ANIMATE_STATE_PENDING_DRAG) {
+                        if (animateState != animateStatePendingDrag) {
                             viewState!!.buttonX = beforeState!!.buttonX + (afterState!!.buttonX - beforeState!!.buttonX) * value
                         }
                         viewState!!.checkStateColor = argbEvaluator.evaluate(value, beforeState!!.checkStateColor, afterState!!.checkStateColor) as Int
                     }
                 }
-                ANIMATE_STATE_PENDING_DRAG -> {
+                animateStatePendingDrag -> {
                     viewState!!.checkedLineColor = argbEvaluator.evaluate(value, beforeState!!.checkedLineColor, afterState!!.checkedLineColor) as Int
                     viewState!!.radius = beforeState!!.radius + (afterState!!.radius - beforeState!!.radius) * value
-                    if (animateState != ANIMATE_STATE_PENDING_DRAG) {
+                    if (animateState != animateStatePendingDrag) {
                         viewState!!.buttonX = beforeState!!.buttonX + (afterState!!.buttonX - beforeState!!.buttonX) * value
                     }
                     viewState!!.checkStateColor = argbEvaluator.evaluate(value, beforeState!!.checkStateColor, afterState!!.checkStateColor) as Int
                 }
-                ANIMATE_STATE_SWITCH -> {
+                animateStateSwitch -> {
                     viewState!!.buttonX = beforeState!!.buttonX + (afterState!!.buttonX - beforeState!!.buttonX) * value
 
                     val fraction = (viewState!!.buttonX - buttonMinX) / (buttonMaxX - buttonMinX)
@@ -294,11 +215,13 @@ class BaseSwitchButton : View, Checkable {
                             checkLineColor
                     ) as Int
                 }
-                ANIMATE_STATE_DRAGING -> {
+                animateStateDrag -> {
+                    run { }
                 }
                 animateStateNone -> {
                 }
                 else -> {
+                    run { }
                 }
             }
             postInvalidate()
@@ -309,25 +232,25 @@ class BaseSwitchButton : View, Checkable {
 
         override fun onAnimationEnd(animation: Animator) {
             when (animateState) {
-                ANIMATE_STATE_DRAGING -> {
+                animateStateDrag -> {
                 }
-                ANIMATE_STATE_PENDING_DRAG -> {
-                    animateState = ANIMATE_STATE_DRAGING
+                animateStatePendingDrag -> {
+                    animateState = animateStateDrag
                     viewState!!.checkedLineColor = Color.TRANSPARENT
                     viewState!!.radius = viewRadius
 
                     postInvalidate()
                 }
-                ANIMATE_STATE_PENDING_RESET -> {
+                animateStatePendingReset -> {
                     animateState = animateStateNone
                     postInvalidate()
                 }
-                ANIMATE_STATE_PENDING_SETTLE -> {
+                animateStatePendingSettle -> {
                     animateState = animateStateNone
                     postInvalidate()
                     broadcastEvent()
                 }
-                ANIMATE_STATE_SWITCH -> {
+                animateStateSwitch -> {
                     isChecked = !isChecked
                     animateState = animateStateNone
                     postInvalidate()
@@ -345,7 +268,6 @@ class BaseSwitchButton : View, Checkable {
         override fun onAnimationRepeat(animation: Animator) {}
     }
 
-
     /**
      * 是否在动画状态
      */
@@ -356,13 +278,13 @@ class BaseSwitchButton : View, Checkable {
      * 是否在进入拖动或离开拖动状态
      */
     private val isPendingDragState: Boolean
-        get() = animateState == ANIMATE_STATE_PENDING_DRAG || animateState == ANIMATE_STATE_PENDING_RESET
+        get() = animateState == animateStatePendingDrag || animateState == animateStatePendingReset
 
     /**
      * 是否在手指拖动状态
      */
     private val isDragState: Boolean
-        get() = animateState == ANIMATE_STATE_DRAGING
+        get() = animateState == animateStateDrag
 
     constructor(context: Context) : super(context) {
         init(context, null)
@@ -376,36 +298,13 @@ class BaseSwitchButton : View, Checkable {
         init(context, attrs)
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes) {
-        init(context, attrs)
-    }
+
 
     /**
      * 初始化参数
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private fun init(context: Context, attrs: AttributeSet?) {
-
-
-        when (switchButtonStyle) {
-            circleSwitchButton -> {
-
-            }
-            squareSwitchButton -> {
-                val density = resources.displayMetrics.density
-
-                lineHeight = (LINE_HEIGHT * density + 0.5f).toInt()
-
-                //        buttonOffset = (int) (BUTTON_OFFSET * density + 0.5f);
-            }
-            lineSwitchButton -> {
-                val density = resources.displayMetrics.density
-
-                lineHeight = (LINE_HEIGHT * density + 0.5f).toInt()
-                buttonOffset = (BUTTON_OFFSET * density + 0.5f).toInt()
-            }
-        }
 
         var typedArray: TypedArray? = null
         if (attrs != null) {
@@ -416,17 +315,17 @@ class BaseSwitchButton : View, Checkable {
                 R.styleable.SwitchButton_sb_shadow_effect,
                 true)
 
-        uncheckCircleColor = optColor(typedArray,
+        uncheckedCircleColor = optColor(typedArray,
                 R.styleable.SwitchButton_sb_uncheckcircle_color,
                 -0x555556)//0XffAAAAAA;
 
-        uncheckCircleWidth = optPixelSize(typedArray,
+        uncheckedCircleWidth = optPixelSize(typedArray,
                 R.styleable.SwitchButton_sb_uncheckcircle_width,
                 dp2pxInt(1.5f))//dp2pxInt(1.5f);
 
-        uncheckCircleOffsetX = dp2px(10f)
+        uncheckedCircleOffsetX = dp2px(10f)
 
-        uncheckCircleRadius = optPixelSize(typedArray,
+        uncheckedCircleRadius = optPixelSize(typedArray,
                 R.styleable.SwitchButton_sb_uncheckcircle_radius,
                 dp2px(4f))//dp2px(4);
 
@@ -493,7 +392,7 @@ class BaseSwitchButton : View, Checkable {
 
         background = optColor(typedArray,
                 R.styleable.SwitchButton_sb_background,
-                Color.TRANSPARENT)
+                Color.WHITE)//Color.WHITE;
 
         enableEffect = optBoolean(typedArray,
                 R.styleable.SwitchButton_sb_enable_effect,
@@ -529,24 +428,22 @@ class BaseSwitchButton : View, Checkable {
 
         super.setClickable(true)
         super.setPadding(0, 0, 0, 0)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        }
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        var widthMeasureSpec = widthMeasureSpec
-        var heightMeasureSpec = heightMeasureSpec
-        val widthMode = View.MeasureSpec.getMode(widthMeasureSpec)
-        val heightMode = View.MeasureSpec.getMode(heightMeasureSpec)
+        var w = widthMeasureSpec
+        var h = heightMeasureSpec
+        val widthMode = View.MeasureSpec.getMode(w)
+        val heightMode = View.MeasureSpec.getMode(h)
 
         if (widthMode == View.MeasureSpec.UNSPECIFIED || widthMode == View.MeasureSpec.AT_MOST) {
-            widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(DEFAULT_WIDTH, View.MeasureSpec.EXACTLY)
+            w = View.MeasureSpec.makeMeasureSpec(DEFAULT_WIDTH, View.MeasureSpec.EXACTLY)
         }
         if (heightMode == View.MeasureSpec.UNSPECIFIED || heightMode == View.MeasureSpec.AT_MOST) {
-            heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(DEFAULT_HEIGHT, View.MeasureSpec.EXACTLY)
+            h = View.MeasureSpec.makeMeasureSpec(DEFAULT_HEIGHT, View.MeasureSpec.EXACTLY)
         }
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        super.onMeasure(w, h)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -558,65 +455,19 @@ class BaseSwitchButton : View, Checkable {
         height = h.toFloat() - viewPadding - viewPadding
         width = w.toFloat() - viewPadding - viewPadding
 
-        when (switchButtonStyle) {
-            circleSwitchButton -> {
-                viewRadius = height * .6f
-            }
-            squareSwitchButton -> {
-                viewRoundRadius = mdp2px(0.6f)
-                viewRadius = height * 0.35f
-            }
-            lineSwitchButton -> {
-                viewRadius = height * 0.35f
-
-            }
-        }
-
-
+        viewRadius = height * .6f
         buttonRadius = viewRadius - borderWidth
 
-        when (switchButtonStyle) {
-            circleSwitchButton -> {
-                left = viewPadding
-                top = viewPadding + 10
-                right = w - viewPadding
-                bottom = h.toFloat() - viewPadding - 10f
-            }
-            squareSwitchButton -> {
-                left = (w / 2 - lineHeight).toFloat()
-                top = viewPadding
-                right = (w / 2 + lineHeight).toFloat()
-                bottom = h - viewPadding
-            }
-            lineSwitchButton -> {
-                left = viewPadding
-                top = viewPadding + 10
-                right = w - viewPadding
-                bottom = h.toFloat() - viewPadding - 10f
-            }
-        }
-
-
+        left = viewPadding
+        top = viewPadding + 10
+        right = w - viewPadding
+        bottom = h.toFloat() - viewPadding - 10f
 
         centerX = (left + right) * .5f
         centerY = (top + bottom) * .5f
 
-        when (switchButtonStyle) {
-            circleSwitchButton -> {
-                buttonMinX = left + viewRadius - 10
-                buttonMaxX = right - viewRadius + 10
-            }
-            squareSwitchButton -> {
-                buttonMinX = left + (lineHeight / 2).toFloat() + buttonOffset.toFloat()
-                buttonMaxX = right - (lineHeight / 2).toFloat() - buttonOffset.toFloat()
-
-            }
-            lineSwitchButton -> {
-                buttonMinX = left + viewRadius - 10 + buttonOffset
-                buttonMaxX = right - viewRadius + 10 - buttonOffset
-            }
-        }
-
+        buttonMinX = left + viewRadius - 10
+        buttonMaxX = right - viewRadius + 10
 
         if (isChecked()) {
             buttonPaint!!.color = checkedBtnColor
@@ -661,74 +512,26 @@ class BaseSwitchButton : View, Checkable {
         drawRoundRect(canvas,
                 left, top, right, bottom,
                 viewRadius, paint!!)
+        //绘制关闭状态的边框
+        //        paint.setStyle(Paint.Style.STROKE);
+        paint!!.color = uncheckedColor
+        drawRoundRect(canvas,
+                left, top, right, bottom,
+                viewRadius, paint!!)
 
-        when (switchButtonStyle) {
-            circleSwitchButton -> {
-                //绘制关闭状态的边框
-                //        paint.setStyle(Paint.Style.STROKE);
-                paint!!.color = uncheckedColor
-                drawRoundRect(canvas,
-                        left, top, right, bottom,
-                        viewRadius, paint!!)
-
-                //绘制小圆圈
-                if (showIndicator) {
-                    drawUncheckIndicator(canvas)
-                }
-
-                //绘制开启背景色
-                val des = viewState!!.radius * .5f//[0-backgroundRadius*0.5f]
-                paint!!.style = Paint.Style.STROKE
-                paint!!.color = viewState!!.checkStateColor
-                paint!!.strokeWidth = borderWidth + des * 2f
-                drawRoundRect(canvas,
-                        left + des, top + des, right - des, bottom - des,
-                        viewRadius, paint!!)
-
-
-            }
-            squareSwitchButton -> {
-                //        //绘制关闭状态的边框
-                //        paint.setStyle(Paint.Style.STROKE);
-                //        paint.setColor(uncheckedColor);
-                //        drawRoundRect(canvas,
-                //                left, top, right, bottom,
-                //                viewRadius, paint);
-
-                //绘制小圆圈
-                if (showIndicator) {
-                    drawUncheckIndicator(canvas)
-                }
-
-                //绘制开启背景色
-                val des = 0f//[0-backgroundRadius*0.5f]
-                paint!!.style = Paint.Style.FILL
-                paint!!.color = viewState!!.checkStateColor
-                //        paint.setStrokeWidth(borderWidth + des * 2f);
-                val btnHalfHeightY = ((bottom - top) / 2 + top).toInt()
-                drawRoundRect(canvas,
-                        left, (btnHalfHeightY - lineHeight / 2).toFloat(),
-                        right, (btnHalfHeightY + lineHeight / 2).toFloat(),
-                        viewRoundRadius, paint!!)
-            }
-
-            lineSwitchButton -> {
-                //绘制小圆圈
-                if (showIndicator) {
-                    drawUncheckIndicator(canvas)
-                }
-
-                //绘制开启背景色
-                paint!!.style = Paint.Style.FILL
-                paint!!.color = viewState!!.checkStateColor
-                val btnHalfHeightY = ((bottom - top) / 2 + top).toInt()
-                drawRoundRect(canvas,
-                        left, (btnHalfHeightY - lineHeight / 2).toFloat(),
-                        right, (btnHalfHeightY + lineHeight / 2).toFloat(),
-                        viewRadius, paint!!)
-            }
+        //绘制小圆圈
+        if (showIndicator) {
+            drawUncheckedIndicator(canvas)
         }
 
+        //绘制开启背景色
+        val des = viewState!!.radius * .5f//[0-backgroundRadius*0.5f]
+        paint!!.style = Paint.Style.STROKE
+        paint!!.color = viewState!!.checkStateColor
+        paint!!.strokeWidth = borderWidth + des * 2f
+        drawRoundRect(canvas,
+                left + des, top + des, right - des, bottom - des,
+                viewRadius, paint!!)
 
         //绘制按钮左边绿色长条遮挡
         paint!!.style = Paint.Style.FILL
@@ -740,31 +543,13 @@ class BaseSwitchButton : View, Checkable {
         }
 
         //绘制按钮
-        when (switchButtonStyle) {
-            circleSwitchButton -> {
-                drawButton(canvas, viewState!!.buttonX, centerY)
-
-            }
-            squareSwitchButton -> {
-                //绘制按钮
-//                drawRoundRect(canvas,
-//                        viewState!!.buttonX - lineHeight / 2, (btnHalfHeightY - lineHeight / 2).toFloat(),
-//                        viewState!!.buttonX + lineHeight / 2, (btnHalfHeightY + lineHeight / 2).toFloat(),
-//                        viewRoundRadius, buttonPaint)
-
-                //        drawButton(canvas, viewState.buttonX, centerY);
-            }
-            lineSwitchButton -> {
-                drawButton(canvas, viewState!!.buttonX, centerY)
-            }
-        }
+        drawButton(canvas, viewState!!.buttonX, centerY)
     }
-
 
     /**
      * 绘制选中状态指示器
      */
-    protected fun drawCheckedIndicator(canvas: Canvas) {
+    private fun drawCheckedIndicator(canvas: Canvas) {
         drawCheckedIndicator(canvas,
                 viewState!!.checkedLineColor,
                 checkLineWidth.toFloat(),
@@ -776,7 +561,7 @@ class BaseSwitchButton : View, Checkable {
     /**
      * 绘制选中状态指示器
      */
-    @JvmOverloads protected fun drawCheckedIndicator(canvas: Canvas,
+    private fun drawCheckedIndicator(canvas: Canvas,
                                                      color: Int = viewState!!.checkedLineColor,
                                                      lineWidth: Float = checkLineWidth.toFloat(),
                                                      sx: Float = left + viewRadius - checkedLineOffsetX, sy: Float = centerY - checkLineLength, ex: Float = left + viewRadius - checkedLineOffsetY, ey: Float = centerY + checkLineLength,
@@ -792,54 +577,31 @@ class BaseSwitchButton : View, Checkable {
     /**
      * 绘制关闭状态指示器
      */
-    private fun drawUncheckIndicator(canvas: Canvas) {
-        drawUncheckIndicator(canvas,
-                uncheckCircleColor,
-                uncheckCircleWidth.toFloat(),
-                right - uncheckCircleOffsetX, centerY,
-                uncheckCircleRadius,
+    private fun drawUncheckedIndicator(canvas: Canvas) {
+        drawUncheckedIndicator(canvas,
+                uncheckedCircleColor,
+                uncheckedCircleWidth.toFloat(),
+                right - uncheckedCircleOffsetX, centerY,
+                uncheckedCircleRadius,
                 paint)
     }
 
     /**
      * 绘制关闭状态指示器
      */
-    protected fun drawUncheckIndicator(canvas: Canvas,
-                                       color: Int,
-                                       lineWidth: Float,
-                                       centerX: Float, centerY: Float,
-                                       radius: Float,
-                                       paint: Paint?) {
+    protected fun drawUncheckedIndicator(canvas: Canvas,
+                                         color: Int,
+                                         lineWidth: Float,
+                                         centerX: Float, centerY: Float,
+                                         radius: Float,
+                                         paint: Paint?) {
         paint!!.style = Paint.Style.STROKE
         paint.color = color
         paint.strokeWidth = lineWidth
         canvas.drawCircle(centerX, centerY, radius, paint)
     }
 
-    /**
-     * @param canvas
-     * @param left
-     * @param top
-     * @param right
-     * @param bottom
-     * @param startAngle
-     * @param sweepAngle
-     * @param paint
-     */
-    private fun drawArc(canvas: Canvas,
-                        left: Float, top: Float,
-                        right: Float, bottom: Float,
-                        startAngle: Float, sweepAngle: Float,
-                        paint: Paint) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            canvas.drawArc(left, top, right, bottom,
-                    startAngle, sweepAngle, true, paint)
-        } else {
-            rect.set(left, top, right, bottom - 30)
-            canvas.drawArc(rect,
-                    startAngle, sweepAngle, true, paint)
-        }
-    }
+
 
     /**
      * @param canvas
@@ -909,7 +671,8 @@ class BaseSwitchButton : View, Checkable {
         }
 
         if (isEventBroadcast) {
-            throw RuntimeException("should NOT switch the state in method: [onCheckedChanged]!")
+            throw RuntimeException(
+                    "should NOT switch the state in method: [onCheckedChanged]!")
         }
         if (!isUiInited) {
             isChecked = !isChecked
@@ -937,7 +700,7 @@ class BaseSwitchButton : View, Checkable {
             return
         }
 
-        animateState = ANIMATE_STATE_SWITCH
+        animateState = animateStateSwitch
         beforeState!!.copy(viewState!!)
 
         if (isChecked()) {
@@ -1046,7 +809,7 @@ class BaseSwitchButton : View, Checkable {
      *
      * @param shadowEffect true.启用
      */
-    fun setShadowEffect(shadowEffect: Boolean) {
+    private fun setShadowEffect(shadowEffect: Boolean) {
         if (this.shadowEffect == shadowEffect) {
             return
         }
@@ -1065,10 +828,6 @@ class BaseSwitchButton : View, Checkable {
         }
     }
 
-    fun setEnableEffect(enable: Boolean) {
-        this.enableEffect = enable
-    }
-
     /**
      * 开始进入拖动状态
      */
@@ -1085,7 +844,7 @@ class BaseSwitchButton : View, Checkable {
             valueAnimator!!.cancel()
         }
 
-        animateState = ANIMATE_STATE_PENDING_DRAG
+        animateState = animateStatePendingDrag
 
         beforeState!!.copy(viewState!!)
         afterState!!.copy(viewState!!)
@@ -1113,7 +872,7 @@ class BaseSwitchButton : View, Checkable {
                 valueAnimator!!.cancel()
             }
 
-            animateState = ANIMATE_STATE_PENDING_RESET
+            animateState = animateStatePendingReset
             beforeState!!.copy(viewState!!)
 
             if (isChecked()) {
@@ -1134,7 +893,7 @@ class BaseSwitchButton : View, Checkable {
             valueAnimator!!.cancel()
         }
 
-        animateState = ANIMATE_STATE_PENDING_SETTLE
+        animateState = animateStatePendingSettle
         beforeState!!.copy(viewState!!)
 
         if (isChecked()) {
@@ -1149,12 +908,8 @@ class BaseSwitchButton : View, Checkable {
 
     override fun setOnLongClickListener(l: View.OnLongClickListener?) {}
 
-    fun setOnCheckedChangeListener(l: OnCheckedChangeListener) {
-        onCheckedChangeListener = l
-    }
-
     interface OnCheckedChangeListener {
-        fun onCheckedChanged(view: BaseSwitchButton, isChecked: Boolean)
+        fun onCheckedChanged(view: CircleSwitchButton, isChecked: Boolean)
     }
 
 
@@ -1189,33 +944,13 @@ class BaseSwitchButton : View, Checkable {
         }
     }
 
-
     companion object {
         private val DEFAULT_WIDTH = dp2pxInt(58f)
         private val DEFAULT_HEIGHT = dp2pxInt(36f)
-        //Joann
 
-        /**
-         * 按钮线的高度
-         */
-        private val LINE_HEIGHT = 2
-//        private val LINE_HEIGHT = 16f
-        /**
-         * 按钮左右偏移量
-         */
-        private val BUTTON_OFFSET = 8
-//        private val BUTTON_OFFSET = 0
-        //Joann
-
-        /** */
         private fun dp2px(dp: Float): Float {
             val r = Resources.getSystem()
             return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.displayMetrics)
-        }
-
-        private fun mdp2px(dp: Float): Float {
-            val density = Resources.getSystem().displayMetrics.density
-            return dp * density + 0.5f
         }
 
         private fun dp2pxInt(dp: Float): Int {
