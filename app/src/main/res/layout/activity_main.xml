@@ -46,16 +46,4 @@
         app:sb_uncheck_color="@color/switch_bg_unchecked_color"
         app:sb_uncheckedbtn_color="@color/switch_button_unchecked_color"/>
 
-    <com.joann.chen.switchbutton.BaseSwitchButton
-        android:id="@+id/baseSwitchButton"
-        android:layout_width="50dp"
-        android:layout_height="30dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        app:sb_checked="true"
-        app:sb_checked_color="@color/switch_bg_checked_color"
-        app:sb_checkedbtn_color="@color/switch_button_checked_color"
-        app:sb_show_indicator="false"
-        app:sb_uncheck_color="@color/switch_bg_unchecked_color"
-        app:sb_uncheckedbtn_color="@color/switch_button_unchecked_color"/>
 </LinearLayout>
